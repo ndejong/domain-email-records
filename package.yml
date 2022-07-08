@@ -22,8 +22,6 @@ test-drivers:
     args: [ '--fail-under=8.0', '--indent-string="    "' ]
 
 templates:
-  - type: github-actions
-    pypi-publish: false
   - type: pylintrc
     use: shut
 
