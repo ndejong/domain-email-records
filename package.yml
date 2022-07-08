@@ -34,4 +34,4 @@ keywords:
 
 publish:
   pypi:
-    enabled: false
+    enabled: true

@@ -1,5 +1,8 @@
 # domain-email-records
-![License](https://img.shields.io/github/license/verbnetworks/arpwitch.svg)
+[![PyPi](https://img.shields.io/pypi/v/domain-email-records.svg)](https://pypi.python.org/pypi/domain-email-records/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/domain-email-records.svg)](https://github.com/ndejong/domain-email-records/)
+[![Build Tests](https://github.com/ndejong/domain-email-records/actions/workflows/build-tests.yml/badge.svg)](https://github.com/ndejong/domain-email-records/actions/workflows/build-tests.yml)
+![License](https://img.shields.io/github/license/ndejong/domain-email-records.svg)
 
 CLI tool to quickly lookup MX, SPF, DMARC records for many domains
 
