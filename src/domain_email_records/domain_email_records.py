@@ -106,7 +106,7 @@ class DomainEmailRecords:
             line = f.readline()
             while line:
                 if "," not in line:
-                    domains.append(line)
+                    domains.append(line.strip())
                 else:
                     columns = line.strip().split(",")
                     if len(columns) >= csv_column:
