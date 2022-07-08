@@ -3,5 +3,5 @@
 
 __title__ = "domain-email-records"
 __author__ = "Nicholas de Jong <ndejong@threatpatrols.com>"
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 __license__ = "BSD2"
