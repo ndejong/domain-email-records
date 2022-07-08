@@ -1,0 +1,39 @@
+
+name: domain-email-records
+version: 0.0.0
+license: BSD2
+author: Nicholas de Jong <ndejong@threatpatrols.com>
+
+description: "CLI tool to quickly lookup MX, SPF, DMARC records for many domains"
+url: https://github.com/ndejong/domain-email-records
+
+typed: false
+
+entrypoints:
+  console_scripts:
+    - domain-email-records = domain_email_records.cli_entrypoint:main
+
+requirements:
+  - python ^3.6
+  - dnspython
+
+test-drivers:
+  - type: pylint
+    args: [ '--fail-under=8.0', '--indent-string="    "' ]
+
+templates:
+  - type: github-actions
+    pypi-publish: false
+  - type: pylintrc
+    use: shut
+
+keywords:
+  - "domain-name"
+  - "dns"
+  - "email"
+  - "spf"
+  - "dmarc"
+
+publish:
+  pypi:
+    enabled: false

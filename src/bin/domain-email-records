@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os
+import re
+import sys
+
+# NB: This file exists for convenience in development by catching the ModuleNotFoundError condition and
+#     appending to the system-path.  This file mimics the automatically generated CLI wrapper that the
+#     package-build process creates, however it is not the actual file installed by the package.
+
+try:
+    from domain_email_records import cli_entrypoint
+except ModuleNotFoundError as e:
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from domain_email_records import cli_entrypoint
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(cli_entrypoint.main())

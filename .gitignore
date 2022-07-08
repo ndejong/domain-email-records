@@ -1,0 +1,11 @@
+.venv*/
+dist/
+build/
+*.py[cod]
+*.egg-info
+*.egg
+
+.idea/
+.pytest_cache
+
+dev/
