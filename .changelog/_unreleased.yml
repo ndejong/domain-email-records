@@ -1,0 +1,4 @@
+changes:
+- type: fix
+  component: general
+  description: Improves the package testing pipeline
