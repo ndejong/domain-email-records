@@ -14,7 +14,7 @@ entrypoints:
     - domain-email-records = domain_email_records.cli_entrypoint:main
 
 requirements:
-  - python ^3.6
+  - python ^3.7
   - dnspython
 
 test-drivers:
