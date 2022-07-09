@@ -49,7 +49,7 @@ domains-by-file:
 
 ### Domains from CSV-file with output file
 ```shell
-$ domain-email-records -f alexa-top-1m-20220708.csv -o /tmp/output.json
+$ domain-email-records -c 1000 -f alexa-top-1m-20220708.csv -o /tmp/output.json
 2022-07-09T16:51:41+1000 - INFO - Looking up 772475 domains in chunks of 1000 per async loop using system-local nameservers.
 2022-07-09T16:51:56+1000 - INFO - Domains in list from:google.com (index:0) to:icims.com (index:1000) query rate ~15.5ms per domain (5.2ms per query) ETA: 2022-07-09T20:11:09+1000
 2022-07-09T16:52:11+1000 - INFO - Domains in list from:aliyuncs.com (index:1000) to:rapidgator.net (index:2000) query rate ~15.1ms per domain (5.0ms per query) ETA: 2022-07-09T20:08:23+1000
@@ -60,12 +60,12 @@ $ domain-email-records -f alexa-top-1m-20220708.csv -o /tmp/output.json
 ### Domains from plain-file with specific nameservers
 ```shell
 $ domain-email-records -n 9.9.9.9 1.1.1.1 8.8.8.8 -f alexa-top-1m-20220708.txt -o /tmp/output.json
-2022-07-09T16:54:25+1000 - INFO - Looking up 772475 domains in chunks of 1000 per async loop using ['9.9.9.9', '1.1.1.1', '8.8.8.8'] nameservers.
-2022-07-09T16:54:49+1000 - INFO - Domains in list from:google.com (index:0) to:icims.com (index:1000) query rate ~24.6ms per domain (8.2ms per query) ETA: 2022-07-09T22:10:36+1000
-2022-07-09T16:55:08+1000 - INFO - Domains in list from:aliyuncs.com (index:1000) to:rapidgator.net (index:2000) query rate ~18.8ms per domain (6.3ms per query) ETA: 2022-07-09T21:33:26+1000
-2022-07-09T16:55:38+1000 - INFO - Domains in list from:hola.org (index:2000) to:shaadi.com (index:3000) query rate ~30.5ms per domain (10.2ms per query) ETA: 2022-07-09T22:11:07+1000
-^C2022-07-09T16:55:39+1000 - WARNING - Exiting...
-```
+2022-07-09T07:34:08+0000 - INFO - Looking up 772475 domains in chunks of 500 per async loop using ['1.1.1.1', '9.9.9.9', '8.8.8.8'] nameservers.
+2022-07-09T07:34:18+0000 - INFO - Domains in list from:google.com (index:0) to:googlesyndication.com (index:500) query rate ~18.3ms per domain (6.1ms per query) ETA: 2022-07-09T11:30:18+0000
+2022-07-09T07:34:20+0000 - WARNING - cisco.com unable to UTF-8 decode rdata: b'\xc8atlassian-domain-verification=blI4HshP3kJO1PV8nZFlncJ6TwVviYYxBNhkMi9wIa9DTxUjY4p1GO7O5SjiioyT'
+2022-07-09T07:34:24+0000 - INFO - Domains in list from:chegg.com (index:500) to:icims.com (index:1000) query rate ~12.4ms per domain (4.1ms per query) ETA: 2022-07-09T10:51:50+0000
+2022-07-09T07:34:32+0000 - INFO - Domains in list from:aliyuncs.com (index:1000) to:poshukach.com (index:1500) query rate ~15.3ms per domain (5.1ms per query) ETA: 2022-07-09T10:51:43+0000
+^C2022-07-09T07:35:10+0000 - WARNING - Exiting...```
 
 ### Domains from cli args with output to file
 ```shell

@@ -110,8 +110,8 @@ def __argparse() -> argparse.Namespace:
         metavar="<size>",
         required=False,
         type=int,
-        default=1000,
-        help="Chunk size per async loop to resolve together (default: 1000)",
+        default=500,
+        help="Chunk size per async loop to resolve together (default: 500)",
     )
 
     direct_list_parser = parser.add_argument_group(title="domains-by-cli")
