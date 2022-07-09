@@ -1,0 +1,5 @@
+changes:
+- type: feature
+  component: general
+  description: Improves logging messages; better exception handling; handle bad query
+    data; provides processing stats in-the-run

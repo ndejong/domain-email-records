@@ -1,22 +1,15 @@
 import sys
-import json
+import logging
 import asyncio
 import argparse
 import textwrap
-from signal import signal, SIGINT
 from domain_email_records import __title__
 from domain_email_records import __version__
 from domain_email_records.domain_email_records import DomainEmailRecords
 from domain_email_records.domain_email_records import DomainEmailRecordsException
 
 
-def sigint_handler(__signal_received, __frame):
-    print("SIGINT received, exiting.")
-    exit(1)
-
-
 def main():
-    signal(SIGINT, sigint_handler)
     args = __argparse()
 
     if args.quiet:
@@ -27,20 +20,40 @@ def main():
         logging_level = "INFO"
 
     try:
-        asyncio.run(
-            DomainEmailRecords(
-                chunk_size=args.chunk_size,
-                csv_column=args.csv_column,
-                logging_level=logging_level,
-            ).process(filename=args.filename, domains=args.domains)
+        domain_email_records = DomainEmailRecords(
+            chunk_size=args.chunk,
+            csv_column=args.csv_column,
+            max_query_seconds=args.timeout,
+            logging_level=logging_level,
         )
-    except DomainEmailRecordsException as e:
-        error = {"program": "{}".format(__title__), "version": "v{}".format(__version__), "message": str(e.args[0])}
-        if len(e.args) > 1:
-            error["data"] = str(e.args[1 : len(e.args)])
+        if args.filename:
+            domains = domain_email_records.read_domains_file(filename=args.filename, csv_column=args.csv_column)
+        else:
+            domains = args.domains
 
-        print(json.dumps({"error": error}, indent="  "))
-        exit(1)
+        # asyncio.run(domain_email_records.lookups(domains=domains, output=args.out))
+        eventloop = asyncio.get_event_loop()
+        eventloop.run_until_complete(domain_email_records.lookups(domains=domains, output=args.out))
+        eventloop.close()
+
+    except KeyboardInterrupt:
+        logging.getLogger(__title__).warning("Exiting...")
+        eventloop.stop()
+        sys.exit(1)
+
+    except DomainEmailRecordsException as e:
+        message = ""
+        for part in e.args:
+            message = f"{str(message)}\n{part}".strip()
+        logging.getLogger(__title__).error(message)
+        sys.exit(1)
+
+    except Exception as e:  # noqa pylint:disable=broad-except
+        message = ""
+        for part in e.args:
+            message = f"{str(message)}\n{part}".strip()
+        logging.getLogger(__title__).critical(message, exc_info=True)
+        sys.exit(1)
 
 
 def __argparse() -> argparse.Namespace:
@@ -63,12 +76,30 @@ def __argparse() -> argparse.Namespace:
     output_parser.add_argument("-v", "--verbose", action="store_true", help="Set verbose logging output")
 
     parser.add_argument(
-        "--chunk-size",
+        "-o",
+        "--out",
+        metavar="<filename>",
+        required=False,
+        type=str,
+        help="Filename to save JSON formatted output to (default: stdout)",
+    )
+    parser.add_argument(
+        "-t",
+        "--timeout",
+        metavar="<seconds>",
+        required=False,
+        type=int,
+        default=5,
+        help="Timeout seconds per domain-record query (default: 5)",
+    )
+    parser.add_argument(
+        "-c",
+        "--chunk",
         metavar="<size>",
         required=False,
         type=int,
-        default=100,
-        help="Number of domain names to async resolve together (default: 100)",
+        default=1000,
+        help="Chunk size per async loop to resolve together (default: 1000)",
     )
 
     direct_list_parser = parser.add_argument_group(title="direct")
@@ -82,7 +113,7 @@ def __argparse() -> argparse.Namespace:
         "--filename",
         metavar="<filename>",
         type=str,
-        help="Filename with list of domains to use; either a plain text file list -or- a comma-separated CSV file list.",
+        help="Filename with list of domains to use; plain list text file -or- a comma-separated CSV file list.",
     )
     file_list_parser.add_argument(
         "--csv-column",
