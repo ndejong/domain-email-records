@@ -21,7 +21,7 @@ requirements = [
 
 setuptools.setup(
   name = 'domain-email-records',
-  version = '0.2.0',
+  version = '0.3.0',
   author = 'Nicholas de Jong',
   author_email = 'ndejong@threatpatrols.com',
   description = 'CLI tool to quickly lookup MX, SPF, DMARC records for many domains',
