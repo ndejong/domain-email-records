@@ -23,7 +23,7 @@ def main():
         domain_email_records = DomainEmailRecords(
             chunk_size=args.chunk,
             csv_column=args.csv_column,
-            max_query_seconds=args.timeout,
+            query_timeout=args.timeout,
             logging_level=logging_level,
         )
         if args.filename:
@@ -33,7 +33,9 @@ def main():
 
         # asyncio.run(domain_email_records.lookups(domains=domains, output=args.out))
         eventloop = asyncio.get_event_loop()
-        eventloop.run_until_complete(domain_email_records.lookups(domains=domains, output=args.out))
+        eventloop.run_until_complete(
+            domain_email_records.lookups(domains=domains, nameservers=args.nameservers, output=args.out)
+        )
         eventloop.close()
 
     except KeyboardInterrupt:
@@ -89,8 +91,18 @@ def __argparse() -> argparse.Namespace:
         metavar="<seconds>",
         required=False,
         type=int,
-        default=5,
-        help="Timeout seconds per domain-record query (default: 5)",
+        default=10,
+        help="Timeout seconds per domain-record query (default: 10)",
+    )
+    parser.add_argument(
+        "-n",
+        "--nameservers",
+        metavar="<address>",
+        required=False,
+        type=str,
+        nargs="*",
+        default=None,
+        help="Space separated list of alternate nameservers (default: system nameservers)",
     )
     parser.add_argument(
         "-c",
@@ -102,12 +114,12 @@ def __argparse() -> argparse.Namespace:
         help="Chunk size per async loop to resolve together (default: 1000)",
     )
 
-    direct_list_parser = parser.add_argument_group(title="direct")
+    direct_list_parser = parser.add_argument_group(title="domains-by-cli")
     direct_list_parser.add_argument(
         "-d", "--domains", metavar="<domain>", nargs="*", help="Space separated list of domain names to query"
     )
 
-    file_list_parser = parser.add_argument_group(title="filename")
+    file_list_parser = parser.add_argument_group(title="domains-by-file")
     file_list_parser.add_argument(
         "-f",
         "--filename",
@@ -116,6 +128,7 @@ def __argparse() -> argparse.Namespace:
         help="Filename with list of domains to use; plain list text file -or- a comma-separated CSV file list.",
     )
     file_list_parser.add_argument(
+        "-col",
         "--csv-column",
         metavar="<col>",
         required=False,

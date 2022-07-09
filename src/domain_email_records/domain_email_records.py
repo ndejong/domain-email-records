@@ -21,34 +21,39 @@ class DomainEmailRecords:
 
     chunk_size: int
     csv_column: int
-    max_query_seconds: int
+    query_timeout: int
 
-    def __init__(self, chunk_size=100, csv_column=2, max_query_seconds=5, logging_level="INFO"):
+    def __init__(self, chunk_size=1000, csv_column=2, query_timeout=10, logging_level="INFO"):
         self.chunk_size = chunk_size
         self.csv_column = csv_column
-        self.max_query_seconds = max_query_seconds
+        self.query_timeout = query_timeout
 
         global logger
         logger = Logger(name=__title__).setup(level=logging_level)
 
-    async def lookups(self, domains: list = None, output: str = None):
-        logger.debug(f"lookups(len(domains)={len(domains)}, output={output})")
+    async def lookups(self, domains: list = None, nameservers: list = None, output: str = None):
+        logger.debug(f"lookups(len(domains)={len(domains)}, nameservers={nameservers}, output={output})")
+
+        chunk_ms_per_domains = []
+        estimate_finish_start = time.time()
+        domain_list_index_start = 0
+        sys.stdout.close = lambda: None
 
         def list_chunk(seq, size):
             return (seq[pos : pos + size] for pos in range(0, len(seq), size))
 
-        sys.stdout.close = lambda: None
+        logger.info(
+            f"Looking up {len(domains)} domains in chunks of {self.chunk_size} per async loop "
+            f"using {nameservers if nameservers else 'system-local'} nameservers."
+        )
 
         with (open(output, "w") if output else sys.stdout) as output_handle:
-
-            chunk_ms_per_domains = []
-            estimate_finish_start = time.time()
 
             for chunk in list_chunk(domains, self.chunk_size):
                 start_time = time.perf_counter()
                 start_domain = chunk[0]
 
-                results = await asyncio.gather(*[self.domain_record_lookups(domain) for domain in chunk])
+                results = await asyncio.gather(*[self.domain_record_lookups(domain, nameservers) for domain in chunk])
                 for result in results:
                     output_handle.write(json.dumps(result, indent="  ") + "\n")
 
@@ -61,28 +66,34 @@ class DomainEmailRecords:
                     (sum(chunk_ms_per_domains) / len(chunk_ms_per_domains)) / 1000
                 )
                 estimate_finish_time = datetime.datetime.fromtimestamp(
-                    estimate_finish_start + estimate_total_processing_time
-                ).strftime("%Y-%m-%d %H:%M:00")
+                    estimate_finish_start + estimate_total_processing_time,
+                    tz=datetime.datetime.now().astimezone().tzinfo,
+                ).strftime("%Y-%m-%dT%H:%M:%S%z")
 
                 logger.info(
-                    f"Domains in list from:{start_domain} to:{end_domain} queried ({len(chunk)}x) at "
-                    f"approx {round(ms_per_domain,1)}ms per domain ({round(ms_per_domain / 3,1)}ms per query) "
+                    f"Domains in list "
+                    f"from:{start_domain} (index:{domain_list_index_start}) "
+                    f"to:{end_domain} (index:{domain_list_index_start + len(chunk)}) "
+                    f"query rate ~{round(ms_per_domain,1)}ms per domain ({round(ms_per_domain / 3,1)}ms per query) "
                     f"ETA: {estimate_finish_time}"
                 )
 
-    async def domain_record_lookups(self, domain_name: str) -> dict:
+                domain_list_index_start += self.chunk_size
+
+    async def domain_record_lookups(self, domain_name: str, nameservers: list = None) -> dict:
         """
-        Query for mx, spf (via apex-TXT) and dmarc records
+        Query for mx, spf and dmarc records
 
         :param domain_name:
+        :param nameservers:
         :return:
         """
-        logger.debug(f"dns_lookups(domain_name={domain_name})")
+        logger.debug(f"domain_record_lookups(domain_name={domain_name}, nameservers={nameservers})")
 
         records = {}
 
         # mx
-        answers = await self.dns_query(domain_name, "mx")
+        answers = await self.dns_query(domain_name, "mx", nameservers=nameservers)
         if answers:
             for rdata in answers:
                 if "mx" not in records:
@@ -90,7 +101,7 @@ class DomainEmailRecords:
                 records["mx"].append(str(rdata.exchange))
 
         # spf
-        answers = await self.dns_query(domain_name, "txt")
+        answers = await self.dns_query(domain_name, "txt", nameservers=nameservers)
         if answers:
             for rdata in answers:
                 txt_record = await self.rdata_decode(rdata, domain_name=domain_name)
@@ -100,7 +111,7 @@ class DomainEmailRecords:
                     records["spf"].append(txt_record)
 
         # dmarc
-        answers = await self.dns_query(f"_dmarc.{domain_name}", "txt")
+        answers = await self.dns_query(f"_dmarc.{domain_name}", "txt", nameservers=nameservers)
         if answers:
             for rdata in answers:
                 if "dmarc" not in records:
@@ -117,9 +128,14 @@ class DomainEmailRecords:
             decoded = None
         return decoded
 
-    async def dns_query(self, domain_name, query_type):
+    async def dns_query(self, domain_name, query_type, nameservers=None, query_timeout=None):
+        resolver = dns.asyncresolver.Resolver()
+        if nameservers:
+            resolver.nameservers = nameservers
+        if not query_timeout:
+            query_timeout = self.query_timeout
         try:
-            answers = await dns.asyncresolver.resolve(domain_name, query_type.upper(), lifetime=self.max_query_seconds)
+            answers = await resolver.resolve(domain_name, query_type.upper(), lifetime=query_timeout)
         except dns.exception.DNSException:
             logger.debug(f"{domain_name} unable to query type:{query_type}")
             answers = None

@@ -1,0 +1,5 @@
+changes:
+- type: feature
+  component: general
+  description: Adds ability to use alternative nameservers; fixes ETA to show timezone;
+    adds list index information to logs
