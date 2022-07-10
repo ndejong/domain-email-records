@@ -21,7 +21,7 @@ requirements = [
 
 setuptools.setup(
   name = 'domain-email-records',
-  version = '0.4.0',
+  version = '0.4.1',
   author = 'Nicholas de Jong',
   author_email = 'ndejong@threatpatrols.com',
   description = 'CLI tool to quickly lookup MX, SPF, DMARC records for many domains',
@@ -44,6 +44,6 @@ setuptools.setup(
   },
   cmdclass = {},
   keywords = ['domain-name', 'dns', 'email', 'spf', 'dmarc'],
-  classifiers = [],
+  classifiers = ['Environment :: Console', 'Intended Audience :: System Administrators', 'Intended Audience :: Information Technology', 'Programming Language :: Python :: 3', 'License :: OSI Approved :: BSD License'],
   zip_safe = True,
 )

@@ -1,0 +1,5 @@
+changes:
+- type: fix
+  component: general
+  description: Adds Python version information for PyPi
+release_date: '2022-07-10'

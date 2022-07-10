@@ -1,6 +1,6 @@
 
 name: domain-email-records
-version: 0.4.0
+version: 0.4.1
 license: BSD2
 author: Nicholas de Jong <ndejong@threatpatrols.com>
 
@@ -31,6 +31,13 @@ keywords:
   - "email"
   - "spf"
   - "dmarc"
+
+classifiers:
+  - "Environment :: Console"
+  - "Intended Audience :: System Administrators"
+  - "Intended Audience :: Information Technology"
+  - "Programming Language :: Python :: 3"
+  - "License :: OSI Approved :: BSD License"
 
 publish:
   pypi:
