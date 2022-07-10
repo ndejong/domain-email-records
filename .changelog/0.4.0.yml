@@ -3,3 +3,4 @@ changes:
   component: general
   description: Adds apex and ns lookup types; adds ability to select which types to
     perform
+release_date: '2022-07-10'
