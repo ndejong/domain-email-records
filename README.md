@@ -15,9 +15,9 @@ pip install [--upgrade] domain-email-records
 
 ## Usage
 ```shell
-usage: domain-email-records [-h] [-q | -v] [-o <filename>] [-t <seconds>] [-n [<address> ...]] [-c <size>] [-d [<domain> ...]] [-f <filename>] [-col <col>]
+usage: domain-email-records [-h] [-q | -v] [-o <filename>] [-T <seconds>] [-n [<address> ...]] [-t [<qtype> ...]] [-c <size>] [-d [<domain> ...]] [-f <filename>] [-col <col>]
 
-domain-email-records v0.2.1
+domain-email-records v0.4.0
 
 CLI tool to quickly lookup MX, SPF, DMARC records for many domains
 
@@ -27,12 +27,14 @@ options:
   -v, --verbose         Set verbose logging output
   -o <filename>, --out <filename>
                         Filename to save JSON formatted output to (default: stdout)
-  -t <seconds>, --timeout <seconds>
+  -T <seconds>, --timeout <seconds>
                         Timeout seconds per domain-record query (default: 10)
   -n [<address> ...], --nameservers [<address> ...]
                         Space separated list of alternate nameservers (default: system nameservers)
+  -t [<qtype> ...], --types [<qtype> ...]
+                        Space separated list lookup types to collect (default: ['ns', 'apex', 'mx', 'spf', 'dmarc']); also 'txt' type is available
   -c <size>, --chunk <size>
-                        Chunk size per async loop to resolve together (default: 1000)
+                        Chunk size per async loop to resolve together (default: 500)
 
 domains-by-cli:
   -d [<domain> ...], --domains [<domain> ...]
@@ -65,7 +67,8 @@ $ domain-email-records -n 9.9.9.9 1.1.1.1 8.8.8.8 -f alexa-top-1m-20220708.txt -
 2022-07-09T07:34:20+0000 - WARNING - cisco.com unable to UTF-8 decode rdata: b'\xc8atlassian-domain-verification=blI4HshP3kJO1PV8nZFlncJ6TwVviYYxBNhkMi9wIa9DTxUjY4p1GO7O5SjiioyT'
 2022-07-09T07:34:24+0000 - INFO - Domains in list from:chegg.com (index:500) to:icims.com (index:1000) query rate ~12.4ms per domain (4.1ms per query) ETA: 2022-07-09T10:51:50+0000
 2022-07-09T07:34:32+0000 - INFO - Domains in list from:aliyuncs.com (index:1000) to:poshukach.com (index:1500) query rate ~15.3ms per domain (5.1ms per query) ETA: 2022-07-09T10:51:43+0000
-^C2022-07-09T07:35:10+0000 - WARNING - Exiting...```
+^C2022-07-09T07:35:10+0000 - WARNING - Exiting...
+```
 
 ### Domains from cli args with output to file
 ```shell
@@ -76,8 +79,18 @@ $ domain-email-records -d google.com facebook.com apple.com amazon.com -o /tmp/o
 ### Domains from cli args with output to stdout
 ```
 $ domain-email-records -d google.com facebook.com apple.com amazon.com
+2022-07-10T21:27:19+1000 - INFO - Looking up 4 domains in chunks of 500 per async loop using system-local nameservers.
 {
   "google.com": {
+    "ns": [
+      "ns2.google.com.",
+      "ns1.google.com.",
+      "ns3.google.com.",
+      "ns4.google.com."
+    ],
+    "apex": [
+      "142.250.204.14"
+    ],
     "mx": [
       "smtp.google.com."
     ],
@@ -90,7 +103,7 @@ $ domain-email-records -d google.com facebook.com apple.com amazon.com
   }
 }
 ...
-2022-07-09T14:27:22+1000 - INFO - Domains in list from:google.com to:amazon.com queried (4x) at approx 15.6ms per domain (5.2ms per query) ETA: 2022-07-09 14:27:00
+2022-07-10T21:27:19+1000 - INFO - Domains in list from:google.com (index:0) to:amazon.com (index:4) query rate ~38.8ms per domain (7.8ms per query) ETA: 2022-07-10T21:27:19+1000
 ```
 
 ---

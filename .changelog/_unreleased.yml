@@ -1,0 +1,5 @@
+changes:
+- type: feature
+  component: general
+  description: Adds apex and ns lookup types; adds ability to select which types to
+    perform

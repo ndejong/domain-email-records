@@ -3,10 +3,12 @@ import logging
 import asyncio
 import argparse
 import textwrap
+
 from domain_email_records import __title__
 from domain_email_records import __version__
 from domain_email_records.domain_email_records import DomainEmailRecords
 from domain_email_records.domain_email_records import DomainEmailRecordsException
+from domain_email_records import DOMAIN_RECORD_TYPES_VALID
 
 
 def main():
@@ -24,17 +26,17 @@ def main():
             chunk_size=args.chunk,
             csv_column=args.csv_column,
             query_timeout=args.timeout,
+            nameservers=args.nameservers,
             logging_level=logging_level,
         )
         if args.filename:
-            domains = domain_email_records.read_domains_file(filename=args.filename, csv_column=args.csv_column)
+            domains = domain_email_records.read_domain_list_file(filename=args.filename, csv_column=args.csv_column)
         else:
             domains = args.domains
 
-        # asyncio.run(domain_email_records.lookups(domains=domains, output=args.out))
         eventloop = asyncio.get_event_loop()
         eventloop.run_until_complete(
-            domain_email_records.lookups(domains=domains, nameservers=args.nameservers, output=args.out)
+            domain_email_records.lookups(domains=domains, lookup_types=args.types, output=args.out)
         )
         eventloop.close()
 
@@ -86,7 +88,7 @@ def __argparse() -> argparse.Namespace:
         help="Filename to save JSON formatted output to (default: stdout)",
     )
     parser.add_argument(
-        "-t",
+        "-T",
         "--timeout",
         metavar="<seconds>",
         required=False,
@@ -103,6 +105,17 @@ def __argparse() -> argparse.Namespace:
         nargs="*",
         default=None,
         help="Space separated list of alternate nameservers (default: system nameservers)",
+    )
+    parser.add_argument(
+        "-t",
+        "--types",
+        metavar="<qtype>",
+        required=False,
+        type=str,
+        nargs="*",
+        default=["ns", "apex", "mx", "spf", "dmarc"],
+        help=f"Space separated list lookup types to collect (default: ['ns', 'apex', 'mx', 'spf', 'dmarc']); "
+        f"also 'txt' type is available",
     )
     parser.add_argument(
         "-c",
