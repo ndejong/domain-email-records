@@ -17,6 +17,7 @@ else:
 
 requirements = [
   'dnspython',
+  'async_lru'
 ]
 
 setuptools.setup(
