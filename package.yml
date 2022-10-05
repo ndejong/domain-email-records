@@ -16,6 +16,7 @@ entrypoints:
 requirements:
   - python ^3.7
   - dnspython
+  - async_lru
 
 test-drivers:
   - type: pylint

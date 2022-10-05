@@ -4,6 +4,7 @@ import time
 import logging
 import asyncio
 import datetime
+from async_lru import alru_cache
 
 import dns.asyncresolver
 from domain_email_records.logger import Logger
@@ -117,7 +118,10 @@ class DomainEmailRecords:
         logger.debug(f"domain_record_lookups(domain_name={domain_name}, lookup_types={lookup_types})")
 
         if not set(lookup_types).issubset(set(DOMAIN_RECORD_TYPES_VALID)):
-            raise DomainEmailRecordsException("Unsupported domain record lookup_type requested")
+            raise DomainEmailRecordsException("Unsupported domain record lookup_type requested", lookup_types)
+
+        if 'mx' in lookup_types:
+            lookup_types.insert(lookup_types.index('mx') + 1, 'mx_preference')
 
         records = {}
         for lookup_type in lookup_types:
@@ -144,12 +148,23 @@ class DomainEmailRecords:
         return results
 
     async def domain_record_lookup_mx(self, domain_name) -> list:
-        results = []
+        exchanges, _ = await self.__domain_record_lookup_mx_w_exchange_preference(domain_name=domain_name)
+        return exchanges
+
+    async def domain_record_lookup_mx_preference(self, domain_name) -> list:
+        _, preferences = await self.__domain_record_lookup_mx_w_exchange_preference(domain_name=domain_name)
+        return preferences
+
+    @alru_cache(maxsize=100)
+    async def __domain_record_lookup_mx_w_exchange_preference(self, domain_name) -> tuple:
+        exchanges = []
+        preferences = []
         answers = await self.dns_query(domain_name, "mx")
         if answers:
             for rdata in answers:
-                results.append(str(rdata.exchange))
-        return results
+                exchanges.append(str(rdata.exchange))
+                preferences.append(str(rdata.preference))
+        return exchanges, preferences
 
     async def domain_record_lookup_spf(self, domain_name) -> list:
         results = []

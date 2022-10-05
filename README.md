@@ -6,8 +6,11 @@
 
 CLI tool to quickly lookup MX, SPF, DMARC records for many domains
 
-__NOTE__ this tool can generate several-hundred DNS queries per second, be sure 
-your nameservers have capacity to handle this.
+__NB1__ this tool can generate several-hundred DNS queries per second, be sure your 
+nameservers have capacity to handle this.
+
+__NB2__ if you get errors like `OSError: [Errno 24] Too many open files: '/etc/resolv.conf'` then 
+you are trying to set the chunk-size too large for your system - use a smaller chunk-size.
 
 ## Install
 ```shell
@@ -18,7 +21,7 @@ pip install [--upgrade] domain-email-records
 ```shell
 usage: domain-email-records [-h] [-q | -v] [-o <filename>] [-T <seconds>] [-n [<address> ...]] [-t [<qtype> ...]] [-c <size>] [-d [<domain> ...]] [-f <filename>] [-col <col>]
 
-domain-email-records v0.4.0
+domain-email-records v0.4.1
 
 CLI tool to quickly lookup MX, SPF, DMARC records for many domains
 
@@ -80,20 +83,23 @@ $ domain-email-records -d google.com facebook.com apple.com amazon.com -o /tmp/o
 ### Domains from cli args with output to stdout
 ```
 $ domain-email-records -d google.com facebook.com apple.com amazon.com
-2022-07-10T21:27:19+1000 - INFO - Looking up 4 domains in chunks of 500 per async loop using system-local nameservers.
+2022-10-06T09:37:38+1000 - INFO - Looking up 4 domains in chunks of 500 per async loop using system-local nameservers.
 {
   "google.com": {
     "ns": [
       "ns2.google.com.",
+      "ns4.google.com.",
       "ns1.google.com.",
-      "ns3.google.com.",
-      "ns4.google.com."
+      "ns3.google.com."
     ],
     "apex": [
       "142.250.204.14"
     ],
     "mx": [
       "smtp.google.com."
+    ],
+    "mx_preference": [
+      "10"
     ],
     "spf": [
       "v=spf1 include:_spf.google.com ~all"
@@ -104,7 +110,7 @@ $ domain-email-records -d google.com facebook.com apple.com amazon.com
   }
 }
 ...
-2022-07-10T21:27:19+1000 - INFO - Domains in list from:google.com (index:0) to:amazon.com (index:4) query rate ~38.8ms per domain (7.8ms per query) ETA: 2022-07-10T21:27:19+1000
+2022-10-06T09:37:38+1000 - INFO - Domains in list from:google.com (index:0) to:amazon.com (index:4) query rate ~21.2ms per domain (2.4ms per query) ETA: 2022-10-06T09:37:38+1000
 ```
 
 ---

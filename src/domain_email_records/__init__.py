@@ -6,4 +6,4 @@ __author__ = "Nicholas de Jong <ndejong@threatpatrols.com>"
 __version__ = "0.4.1"
 __license__ = "BSD2"
 
-DOMAIN_RECORD_TYPES_VALID = ["ns", "apex", "mx", "spf", "txt", "dmarc"]
+DOMAIN_RECORD_TYPES_VALID = ["ns", "apex", "mx", "mx_preference", "spf", "txt", "dmarc"]
