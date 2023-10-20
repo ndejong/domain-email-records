@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "domain-email-records"
-version = "0.4.2"
+version = "0.5.1"
 description = "CLI tool to quickly lookup MX, SPF, DMARC records for many domains"
 authors = [
     "Nicholas de Jong <ndejong@threatpatrols.com>"
@@ -24,6 +24,10 @@ classifiers = [
 ]
 
 keywords = [ "domain-name", "dns", "email", "spf", "dmarc" ]
+
+
+[tool.poetry.scripts]
+domain-email-records = "domain_email_records.main:main"
 
 
 [tool.poetry.urls]
