@@ -1,0 +1,5 @@
+[[entries]]
+id = "2267b1e9-0772-4a44-b987-bb3bb4e8019e"
+type = "hygiene"
+description = "Fix bug with mx_preference; code rearrangement; dep updates; migrate to slapcli"
+author = "ndejong@threatpatrols.com"
