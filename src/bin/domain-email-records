@@ -9,11 +9,11 @@ import sys
 #     package-build process creates, however it is not the actual file installed by the package.
 
 try:
-    from domain_email_records import cli_entrypoint
+    from domain_email_records import main
 except ModuleNotFoundError as e:
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    from domain_email_records import cli_entrypoint
+    from domain_email_records import main
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-    sys.exit(cli_entrypoint.main())
+    sys.exit(main.main())

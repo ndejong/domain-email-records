@@ -9,3 +9,4 @@ build/
 .pytest_cache
 
 dev/
+.dmypy.json

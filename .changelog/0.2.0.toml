@@ -1,0 +1,7 @@
+release-date = "2022-07-09"
+
+[[entries]]
+id = "f9e8fb75-b6e7-4cbe-8663-23b3a145717e"
+type = "feature"
+description = "Improves logging messages; better exception handling; handle bad query data; provides processing stats in-the-run"
+author = "ndejong@threatpatrols.com"

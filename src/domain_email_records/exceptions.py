@@ -1,0 +1,2 @@
+class DomainEmailRecordsException(Exception):
+    pass

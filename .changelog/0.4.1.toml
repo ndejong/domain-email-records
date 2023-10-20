@@ -1,0 +1,7 @@
+release-date = "2022-07-10"
+
+[[entries]]
+id = "3781a6c0-d9e6-4303-9bfe-956fdf6e78f9"
+type = "fix"
+description = "Adds Python version information for PyPi"
+author = "ndejong@threatpatrols.com"
