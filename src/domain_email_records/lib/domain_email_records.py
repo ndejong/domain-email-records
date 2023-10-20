@@ -1,10 +1,10 @@
 import asyncio
+import copy
 import datetime
 import json
 import sys
 import time
 from typing import Any, Dict, Generator, List, Optional, Sequence, Tuple
-import copy
 
 import dns.asyncresolver
 from async_lru import alru_cache
