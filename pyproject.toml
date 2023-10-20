@@ -1,0 +1,100 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "domain-email-records"
+version = "0.4.2"
+description = "CLI tool to quickly lookup MX, SPF, DMARC records for many domains"
+authors = [
+    "Nicholas de Jong <ndejong@threatpatrols.com>"
+]
+license = "BSD-2-Clause"
+readme = "README.md"
+packages = [
+    { include = "domain_email_records", from = "src" },
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License"
+]
+
+keywords = [ "domain-name", "dns", "email", "spf", "dmarc" ]
+
+
+[tool.poetry.urls]
+Homepage = "https://github.com/ndejong/domain-email-records"
+Repository = "https://github.com/ndejong/domain-email-records.git"
+Documentation = "https://github.com/ndejong/domain-email-records"
+"Bug Tracker" = "https://github.com/ndejong/domain-email-records/issues"
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+dnspython = "~2.4"                  # https://pypi.org/project/dnspython/#history
+async_lru = "~2.0"                  # https://pypi.org/project/async-lru/#history
+
+
+[tool.poetry.dev-dependencies]
+black = "~23.10"                    # https://pypi.org/project/black/#history
+flake8 = "~6.1"                     # https://pypi.org/project/flake8/#history
+isort = "~5.12"                     # https://pypi.org/project/isort/#history
+mypy = "~1.6"                       # https://pypi.org/project/mypy/#history
+pycln = "^2.3"                      # https://pypi.org/project/pycln/#history
+pytest = "~7.4"                     # https://pypi.org/project/pytest/#history
+safety = "~2.4.b"                   # https://pypi.org/project/safety/#history
+
+[tool.slap]
+typed = true
+release.branch = "dev"
+
+
+[tool.poetry.plugins."slap.plugins.check"]
+changelog = "slap.ext.checks.changelog:ChangelogValidationCheckPlugin"
+general = "slap.ext.checks.general:GeneralChecksPlugin"
+poetry = "slap.ext.checks.poetry:PoetryChecksPlugin"
+release = "slap.ext.checks.release:ReleaseChecksPlugin"
+
+
+[tool.slap.test]
+black = "black --check src/ tests/"
+check = "slap check --show-skipped || true"
+flake8 = "flake8 src/ tests/"
+isort = "isort --check-only src/ tests/"
+mypy   = "dmypy run src/"
+pycln  = "pycln src/ tests/ --check --diff || true"
+pytest = "pytest -vv tests/"
+safety = "pip freeze | safety check --stdin --short-report --output text"
+
+
+[tool.slap.run]
+format = "black src/ tests/ && isort src/ tests/"
+
+
+[tool.mypy]
+python_version = "3.8"
+explicit_package_bases = true
+mypy_path = ["src"]
+namespace_packages = true
+pretty = true
+show_error_codes = true
+show_error_context = true
+strict = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+
+[tool.isort]
+profile = "black"
+line_length = 120
+combine_as_imports = true
+
+
+[tool.black]
+line-length = 120

@@ -1,0 +1,7 @@
+release-date = "2022-07-09"
+
+[[entries]]
+id = "50682c75-36c6-4600-a55d-86c86b9f01f0"
+type = "feature"
+description = "Initial version"
+author = "ndejong@threatpatrols.com"

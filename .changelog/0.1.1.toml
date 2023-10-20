@@ -1,0 +1,7 @@
+release-date = "2022-07-09"
+
+[[entries]]
+id = "1de8f5cc-0cd7-45fa-a740-fde0e72f1fe7"
+type = "fix"
+description = "Improves the package testing pipeline"
+author = "ndejong@threatpatrols.com"

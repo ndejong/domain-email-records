@@ -1,0 +1,7 @@
+release-date = "2022-07-10"
+
+[[entries]]
+id = "6f9bfbd5-d9ed-46c9-a147-2cfaba83c219"
+type = "feature"
+description = "Adds apex and ns lookup types; adds ability to select which types to perform"
+author = "ndejong@threatpatrols.com"
